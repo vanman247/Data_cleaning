@@ -44,7 +44,3 @@ A budding Data Scientist, aspiring Polymath, Love of Data Exploration.
     "Max Values" : [None, 128, None],
     "Unique Values" : (['a', 'b', 'c'], None, ['a', 'b', 'c'])
     }
-
-<!-- ### Footer
-
-Last updated: May 2013
