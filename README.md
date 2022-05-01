@@ -1,9 +1,5 @@
 # Data_cleaning
  This Project is designed to create functions that can be used for cleaning data for Machine Learning usage.
-
----
-layout: cv
-title: Ammon Van Engelenhoven
 ---
 # Ammon Van Enegelenhoven
 A budding Data Scientist, aspiring Polymath, Love of Data Exploration.
