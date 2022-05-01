@@ -5,8 +5,8 @@ import math
 
 script = os.path.realpath(f"Data\\train.csv")
 
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
+pd.set_option('display.max_rows', 25)
+pd.set_option('display.max_columns', 25)
 
 ## Write out the columns name should look like this: str("Feature_1")
 column1_name = str("Id")
@@ -42,7 +42,7 @@ column13_dtype = str("category")
 column14_dtype = str("category")
 column15_dtype = str("int64")
 
-def data(script, column1_dtype, column2_dtype, column3_dtype, column4_dtype, column5_dtype, column6_dtype, column7_dtype, column8_dtype, column9_dtype, column10_dtype, column11_dtype, column12_dtype, column13_dtype, column14_dtype, column15_dtype, column1_name, column2_name, column3_name, column4_name, column5_name, column6_name, column7_name, column8_name, column9_name, column10_name, column11_name, column12_name, column13_name, column14_name, column15_name):
+def importing_correct_data_form(script, column1_dtype, column2_dtype, column3_dtype, column4_dtype, column5_dtype, column6_dtype, column7_dtype, column8_dtype, column9_dtype, column10_dtype, column11_dtype, column12_dtype, column13_dtype, column14_dtype, column15_dtype, column1_name, column2_name, column3_name, column4_name, column5_name, column6_name, column7_name, column8_name, column9_name, column10_name, column11_name, column12_name, column13_name, column14_name, column15_name):
     df = pd.read_csv(script, dtype={column1_name:column1_dtype,
                                     column2_name:column2_dtype,
                                     column3_name:column3_dtype,
@@ -58,9 +58,10 @@ def data(script, column1_dtype, column2_dtype, column3_dtype, column4_dtype, col
                                     column13_name:column13_dtype,
                                     column14_name:column14_dtype,
                                     column15_name:column15_dtype
-                                    })
+                                    })#.set_index(column1_name)
     print(df.describe())
     print(df.info())
-    return
+    return df
 
-data(script, column1_dtype, column2_dtype, column3_dtype, column4_dtype, column5_dtype, column6_dtype, column7_dtype, column8_dtype, column9_dtype, column10_dtype, column11_dtype, column12_dtype, column13_dtype, column14_dtype, column15_dtype, column1_name, column2_name, column3_name, column4_name, column5_name, column6_name, column7_name, column8_name, column9_name, column10_name, column11_name, column12_name, column13_name, column14_name, column15_name)
+df = importing_correct_data_form(script, column1_dtype, column2_dtype, column3_dtype, column4_dtype, column5_dtype, column6_dtype, column7_dtype, column8_dtype, column9_dtype, column10_dtype, column11_dtype, column12_dtype, column13_dtype, column14_dtype, column15_dtype, column1_name, column2_name, column3_name, column4_name, column5_name, column6_name, column7_name, column8_name, column9_name, column10_name, column11_name, column12_name, column13_name, column14_name, column15_name)
+
