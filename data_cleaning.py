@@ -3,11 +3,12 @@ import numpy as np
 import os
 import math
 
-cwd = os.getcwd() + "\Data\train.csv"
+script = os.path.realpath(f"Data\\train.csv")
 
-def data(URL = cwd):
-    df = pd.DataFrame(URL)
-    print(df.head())
+def data(script):
+    df = pd.read_csv(script)
+    print(df.describe())
+    print(df.info())
     return
 
-data(URL=cwd)
+data(script)
