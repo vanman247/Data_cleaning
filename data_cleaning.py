@@ -3,8 +3,11 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import LabelEncoder
-import xgboost as xgb
+from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
 import multiprocessing
 from sklearn.model_selection import GridSearchCV
 
@@ -126,13 +129,55 @@ df = df[df["Street"] > 0]
 #sns.pairplot(df)
 #plt.show()
 
-max_depth = list(range(1,3))
-n_estimators = list(range(80,150))
-
 X = df[["LotArea", "Street", "OverallQual", "OverallCond", "YearBuilt"]]
 y = df["SalePrice"]
-xgb_model = xgb.XGBRegressor(n_jobs=multiprocessing.cpu_count() // 2)
-clf = GridSearchCV(xgb_model, {'max_depth': max_depth, 'n_estimators': n_estimators}, verbose=2, n_jobs=multiprocessing.cpu_count() // 2)
-clf.fit(X, y)
-print(round(clf.best_score_, 2))
-print(clf.best_params_)
+X_train, X_test, y_train, y_test = train_test_split(X, y,random_state=42, test_size=0.33)
+
+model = MLPRegressor(
+    hidden_layer_sizes=(100,),
+    activation='relu',
+    solver='adam',
+    alpha=0.0001,
+    batch_size='auto',
+    learning_rate='constant',
+    learning_rate_init=0.001,
+    power_t=0.5,
+    max_iter=2000,
+    shuffle=True,
+    random_state=42,
+    tol=0.0001,
+    verbose=False,
+    warm_start=False,
+    momentum=0.9,
+    nesterovs_momentum=True,
+    early_stopping=False,
+    validation_fraction=0.1,
+    beta_1=0.9,
+    beta_2=0.999,
+    epsilon=1e-08,
+    n_iter_no_change=10,
+    max_fun=15000)
+
+hidden_layer_sizes = list(range(1,20))
+n_estimators = list(range(80,150))
+n_jobs=(multiprocessing.cpu_count() // 2)
+
+hidden_layer_sizes=list(range(1,100))
+activation=['identity', 'logistic', 'tanh', 'relu']
+solver=['lbfgs', 'sgd', 'adam']
+learning_rate=['constant', 'invscaling', 'adaptive']
+
+param_grid = {hidden_layer_sizes : hidden_layer_sizes
+                #activation : activation,
+                #solver : solver,
+                #learning_rate : learning_rate
+                }
+grid = GridSearchCV(model, param_grid, n_jobs=n_jobs, cv=5)
+grid_result = grid.fit(X_train, y_train)
+# summarize results
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+means = grid_result.cv_results_['mean_test_score']
+stds = grid_result.cv_results_['std_test_score']
+params = grid_result.cv_results_['params']
+for mean, stdev, param in zip(means, stds, params):
+    print("%f (%f) with: %r" % (mean, stdev, param))
