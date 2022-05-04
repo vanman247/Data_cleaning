@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-import seaborn as sns
+import math
 from sklearn.preprocessing import LabelEncoder
-import xgboost as xgb
-import multiprocessing
-from sklearn.model_selection import GridSearchCV
 
 script = os.path.realpath(f"Data\\train.csv")
 
@@ -65,7 +61,7 @@ def importing_correct_data_form(script, column1_dtype, column2_dtype, column3_dt
                                     column15_name:column15_dtype
                                     })#.set_index(column1_name)
     #print(df.describe())
-    #print(df.info())
+    print(df.info())
     return df
 
 df = importing_correct_data_form(script,
@@ -102,15 +98,14 @@ df = importing_correct_data_form(script,
 
 label_encoder = LabelEncoder()
 df["Street"] = label_encoder.fit_transform(df["Street"])
-#df["Utilities"] = label_encoder.fit_transform(df["Utilities"])
-#df["Condition1"] = label_encoder.fit_transform(df["Condition1"])
-#df["BldgType"] = label_encoder.fit_transform(df["BldgType"])
-#df["HouseStyle"] = label_encoder.fit_transform(df["HouseStyle"])
-#df["RoofStyle"] = label_encoder.fit_transform(df["RoofStyle"])
-#df["RoofMatl"] = label_encoder.fit_transform(df["RoofMatl"])
-#df["Exterior1st"] = label_encoder.fit_transform(df["Exterior1st"])
-#df["SaleCondition"] = label_encoder.fit_transform(df["SaleCondition"])
-
+df["Utilities"] = label_encoder.fit_transform(df["Utilities"])
+df["Condition1"] = label_encoder.fit_transform(df["Condition1"])
+df["BldgType"] = label_encoder.fit_transform(df["BldgType"])
+df["HouseStyle"] = label_encoder.fit_transform(df["HouseStyle"])
+df["RoofStyle"] = label_encoder.fit_transform(df["RoofStyle"])
+df["RoofMatl"] = label_encoder.fit_transform(df["RoofMatl"])
+df["Exterior1st"] = label_encoder.fit_transform(df["Exterior1st"])
+df["SaleCondition"] = label_encoder.fit_transform(df["SaleCondition"])
 
 df = df[df["SalePrice"] < 354000]
 df = df[df["YearBuilt"] > 1882]
@@ -120,19 +115,25 @@ df = df[df["OverallQual"] < 10]
 df = df[df["OverallCond"] > 2]
 df = df[df["OverallCond"] < 9]
 df = df[df["Street"] > 0]
+df = df[df["Utilities"] > 0]
 
-#print(df.info())
+outliers=[]
+def detect_outliers(data):
 
-#sns.pairplot(df)
-#plt.show()
+    # This is the Standard deviations (3 for 99.7% of the data)
+    threshold=3
 
-max_depth = list(range(1,3))
-n_estimators = list(range(80,150))
+    # This is the Neccessary information needed to calculate Z_score
+    mean = np.mean(data)
+    std = np.std(data)
 
-X = df[["LotArea", "Street", "OverallQual", "OverallCond", "YearBuilt"]]
-y = df["SalePrice"]
-xgb_model = xgb.XGBRegressor(n_jobs=multiprocessing.cpu_count() // 2)
-clf = GridSearchCV(xgb_model, {'max_depth': max_depth, 'n_estimators': n_estimators}, verbose=2, n_jobs=multiprocessing.cpu_count() // 2)
-clf.fit(X, y)
-print(round(clf.best_score_, 2))
-print(clf.best_params_)
+    for i in data:
+        z_score = (i - mean)/std
+        if np.abs(z_score) > threshold:
+            outliers.append(i)
+    return outliers
+
+detect_outliers(df["SaleCondition"])
+print(outliers)
+print(np.min(outliers))
+print(np.max(outliers))
